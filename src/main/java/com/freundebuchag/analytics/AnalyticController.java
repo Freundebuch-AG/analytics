@@ -1,15 +1,22 @@
 package com.freundebuchag.analytics;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.freundebuchag.analytics.FriendRef.FriendRef;
 import com.freundebuchag.analytics.FriendRef.FriendRefService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.client.RestTemplate;
 
-import java.util.Arrays;
+import java.io.IOException;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -24,24 +31,48 @@ public class AnalyticController {
     @GetMapping
     public ResponseEntity<AnalyticResource> getTopLongDino() {
 
-        RestTemplate restTemplate = new RestTemplate();
+        String url = "http://localhost:8080/friend";
 
-        String url = "https://localhost:8080/friend";
-        FriendRef[] response = restTemplate.getForObject(url, FriendRef[].class);
+        try{
+            HttpRequest getFriends = HttpRequest.newBuilder()
+                    .uri(URI.create(url))
+                    .GET()
+                    .build();
 
-        List<FriendRef> friendRefList = Arrays.asList(response);
+            HttpResponse<String> httpResponse = HttpClient.newHttpClient()
+                    .send(getFriends, HttpResponse.BodyHandlers.ofString());
 
-        friendRefList.stream().map(friend -> {
-            FriendRef friendRef = new FriendRef();
-            friendRef.setId(friend.getId());
-            friendRef.setFirstName(friend.getFirstName());
-            friendRef.setLastName(friend.getLastName());
-            friendRef.setBday(friend.getBday());
-            friendRef.setFood(friend.getFood());
-            friendRef.setAnimal(friend.getAnimal());
-            friendRef.setDino(friendRef.getDino());
-            return friendRef;
-        }).forEach(friendRefService::create);
+            String responseJson = httpResponse.body();
+
+            ObjectMapper objectMapper = new ObjectMapper();
+
+            ArrayNode arrayNode =  (ArrayNode) objectMapper.readTree(responseJson);
+
+            List<FriendRef> friendRefsList = new ArrayList<>();
+
+            for (int i = 0; i < arrayNode.size(); i++) {
+                FriendRef friendRef = objectMapper.treeToValue(arrayNode.get(i), FriendRef.class);
+                friendRefsList.add(friendRef);
+            }
+
+            friendRefsList.stream().map(friend -> {
+                FriendRef friendRef = new FriendRef();
+                friendRef.setId(friend.getId());
+                friendRef.setFirstName(friend.getFirstName());
+                friendRef.setLastName(friend.getLastName());
+                friendRef.setBday(friend.getBday());
+                friendRef.setFood(friend.getFood());
+                friendRef.setAnimal(friend.getAnimal());
+                friendRef.setDino(friend.getDino());
+                return friendRef;
+            }).forEach(friendRefService::create);
+
+        } catch (IOException e) {
+            return ResponseEntity.status(HttpStatus.BAD_GATEWAY).build();
+        } catch (InterruptedException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+
 
         return ResponseEntity.ok(analyticResourceAssembler.toResource(friendRefService.getTop()));
     }

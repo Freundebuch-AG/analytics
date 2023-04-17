@@ -1,5 +1,6 @@
 package com.freundebuchag.analytics.FriendRef;
 
+import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -12,6 +13,7 @@ import static lombok.AccessLevel.PROTECTED;
 @Service
 @Transactional
 @RequiredArgsConstructor(access = PROTECTED)
+@Getter
 public class FriendRefService {
     @NonNull
     private final FriendRefRepository friendRefRepository;
