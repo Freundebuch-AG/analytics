@@ -57,15 +57,6 @@ public class AnalyticController {
             List<FriendRef> friendRefsList = new ArrayList<>();
 
             for (int i = 0; i < arrayNode.size(); i++) {
-                /*FriendRef friendRef = new FriendRef();
-                friendRef.setFirstName(arrayNode.get(i).get("firstName").asText());
-                friendRef.setLastName(arrayNode.get(i).get("lastName").asText());
-                (LocalDate) friendRef.setBday(arrayNode.get(i).get("bday"));
-                friendRef.setFirstName(arrayNode.get(i).get("firstName").asText());
-                friendRef.setFirstName(arrayNode.get(i).get("firstName").asText());
-                friendRef.setFirstName(arrayNode.get(i).get("firstName").asText());
-
-                 */
                 FriendRef friendRef = objectMapper.treeToValue(arrayNode.get(i), FriendRef.class);
                 friendRefsList.add(friendRef);
             }
