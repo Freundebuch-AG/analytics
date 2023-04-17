@@ -1,5 +1,6 @@
 package com.freundebuchag.analytics;
 
+import com.freundebuchag.analytics.TopLongDino.TopLongDino;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

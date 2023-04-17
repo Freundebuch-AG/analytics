@@ -1,9 +1,13 @@
 package com.freundebuchag.analytics;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.freundebuchag.analytics.FriendRef.FriendRef;
 import com.freundebuchag.analytics.FriendRef.FriendRefService;
+import com.freundebuchag.analytics.TopLongDino.TopLongDinoResource;
+import com.freundebuchag.analytics.TopLongDino.TopLongDinoResourceAssembler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,12 +28,12 @@ import java.util.List;
 @RequiredArgsConstructor
 public class AnalyticController {
 
-    private final AnalyticResourceAssembler analyticResourceAssembler;
+    private final TopLongDinoResourceAssembler topLongDinoResourceAssembler;
 
     private final FriendRefService friendRefService;
 
     @GetMapping
-    public ResponseEntity<AnalyticResource> getTopLongDino() {
+    public ResponseEntity<TopLongDinoResource> getTopLongDino() {
 
         String url = "http://localhost:8080/friend";
 
@@ -45,12 +49,23 @@ public class AnalyticController {
             String responseJson = httpResponse.body();
 
             ObjectMapper objectMapper = new ObjectMapper();
+            objectMapper.registerModule(new JavaTimeModule());
+            objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
 
             ArrayNode arrayNode =  (ArrayNode) objectMapper.readTree(responseJson);
 
             List<FriendRef> friendRefsList = new ArrayList<>();
 
             for (int i = 0; i < arrayNode.size(); i++) {
+                /*FriendRef friendRef = new FriendRef();
+                friendRef.setFirstName(arrayNode.get(i).get("firstName").asText());
+                friendRef.setLastName(arrayNode.get(i).get("lastName").asText());
+                (LocalDate) friendRef.setBday(arrayNode.get(i).get("bday"));
+                friendRef.setFirstName(arrayNode.get(i).get("firstName").asText());
+                friendRef.setFirstName(arrayNode.get(i).get("firstName").asText());
+                friendRef.setFirstName(arrayNode.get(i).get("firstName").asText());
+
+                 */
                 FriendRef friendRef = objectMapper.treeToValue(arrayNode.get(i), FriendRef.class);
                 friendRefsList.add(friendRef);
             }
@@ -74,6 +89,6 @@ public class AnalyticController {
         }
 
 
-        return ResponseEntity.ok(analyticResourceAssembler.toResource(friendRefService.getTop()));
+        return ResponseEntity.ok(topLongDinoResourceAssembler.toTopLongDino(friendRefService.getTop()));
     }
 }

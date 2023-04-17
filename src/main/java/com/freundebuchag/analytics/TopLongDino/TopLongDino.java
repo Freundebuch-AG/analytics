@@ -1,4 +1,4 @@
-package com.freundebuchag.analytics;
+package com.freundebuchag.analytics.TopLongDino;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.freundebuchag.analytics.FriendRef.FriendRef;
@@ -20,6 +20,12 @@ public class TopLongDino {
     @Id
     @GeneratedValue
     private UUID dinoId;
+
+    @Column(name = "FIRSTNAME", nullable = false)
+    private String firstName;
+
+    @Column(name = "LASTNAME", nullable = false)
+    private String lastName;
 
     @ManyToOne(targetEntity = FriendRef.class, cascade = CascadeType.ALL)
     private FriendRef friendRef;

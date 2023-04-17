@@ -1,7 +1,8 @@
 package com.freundebuchag.analytics.FriendRef;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.freundebuchag.analytics.TopLongDino;
+import com.freundebuchag.analytics.TopLongDino.TopLongDino;
 import lombok.*;
 
 import javax.persistence.*;
@@ -16,6 +17,7 @@ import java.util.UUID;
 @Setter
 @EqualsAndHashCode
 @Builder
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class FriendRef {
     @JsonProperty("_id")
     @Id
@@ -38,6 +40,7 @@ public class FriendRef {
 
     @Column(name = "DINO")
     private String dino;
+
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "dinoId")
