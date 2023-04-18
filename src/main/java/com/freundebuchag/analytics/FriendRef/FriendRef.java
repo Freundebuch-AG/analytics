@@ -21,6 +21,7 @@ import java.util.UUID;
 public class FriendRef {
     @JsonProperty("_id")
     @Id
+    @Column(name = "id", columnDefinition = "uuid")
     private UUID id;
 
     @Column(name = "FIRSTNAME", nullable = false)

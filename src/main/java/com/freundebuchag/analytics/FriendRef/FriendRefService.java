@@ -6,6 +6,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
+import java.util.UUID;
+
 import static lombok.AccessLevel.PROTECTED;
 
 @Service
@@ -16,7 +19,16 @@ public class FriendRefService {
     @NonNull
     private final FriendRefRepository friendRefRepository;
 
-    public FriendRef create(FriendRef transientEntitiy) {return friendRefRepository.saveAndFlush(transientEntitiy);}
+    public Optional<FriendRef> findByIdOptional(UUID id) {;
+        return friendRefRepository.findById(id);
+    }
+    public FriendRef create(FriendRef transientEntitiy) {
+        if(friendRefRepository.findById(transientEntitiy.getId()).isPresent()){
+            return transientEntitiy;
+        } else{
+            return friendRefRepository.saveAndFlush(transientEntitiy);
+        }
+    }
 
     public FriendRef getTop() {
         return friendRefRepository.getTop();

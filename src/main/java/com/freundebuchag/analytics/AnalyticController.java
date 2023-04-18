@@ -22,6 +22,8 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 @RestController
 @RequestMapping(path = "/dino")
@@ -34,6 +36,8 @@ public class AnalyticController {
 
     @GetMapping
     public ResponseEntity<TopLongDinoResource> getTopLongDino() {
+
+        Optional<FriendRef> test = friendRefService.findByIdOptional(UUID.fromString("a380fc3d-ac50-4048-9f2f-498f07a49b50"));
 
         String url = "http://localhost:8080/friend";
 
