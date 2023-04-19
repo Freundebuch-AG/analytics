@@ -24,10 +24,10 @@ public class FriendRefService {
     }
     public FriendRef create(FriendRef transientEntitiy) {
         if(friendRefRepository.findById(transientEntitiy.getId()).isPresent()){
-            return transientEntitiy;
-        } else{
-            return friendRefRepository.saveAndFlush(transientEntitiy);
+            friendRefRepository.deleteAll();
+
         }
+        return friendRefRepository.saveAndFlush(transientEntitiy);
     }
 
     public FriendRef getTop() {
